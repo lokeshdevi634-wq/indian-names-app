@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Names Directory</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 15px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        p.subtitle {
+            color: #7f8c8d;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .alphabet-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            max-width: 700px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .letter-btn {
+            background: #eef2f5;
+            border: none;
+            color: #34495e;
+            font-weight: bold;
+            font-size: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .letter-btn:hover {
+            background: #3498db;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .letter-btn.active {
+            background: #2980b9;
+            color: white;
+        }
+
+        .results-container {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            display: inline-block;
+        }
+
+        .names-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+
+        .name-card {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-weight: 500;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            border-left: 4px solid #3498db;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #95a5a6;
+            font-style: italic;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🇮🇳 Indian Names Finder</h1>
+    <p class="subtitle">Select an alphabet to explore popular Indian names</p>
+
+    <!-- Alphabet Buttons -->
+    <div class="alphabet-container" id="alphabetButtons"></div>
+
+    <!-- Results Section -->
+    <div class="results-container">
+        <h2 class="section-title" id="selectedLetterTitle">Select a letter</h2>
+        <div class="names-grid" id="namesList">
+            <div class="empty-state">Click any letter above to see names.</div>
+        </div>
+    </div>
+
+    <script>
+        const namesData = {
+            A: ["Aarav", "Ananya", "Aditya", "Anushka", "Arjun", "Avani", "Amit", "Aishwarya"],
+            B: ["Bhavya", "Bharat", "Bhumika", "Baldev", "Bipasha", "Bhuvan"],
+            C: ["Chetan", "Chandni", "Chirag", "Charu", "Chaitanya"],
+            D: ["Dev", "Diya", "Deepak", "Divya", "Dhruv", "Drishti"],
+            E: ["Esha", "Ekansh", "Ekta", "Eshaan"],
+            F: ["Firoz", "Falguni", "Farhan", "Fatima"],
+            G: ["Gaurav", "Gayatri", "Ganesh", "Gitika", "Gautam"],
+            H: ["Harsh", "Heena", "Hrithik", "Hemant", "Harleen"],
+            I: ["Ishaan", "Isha", "Irfan", "Indira", "Ishita"],
+            J: ["Jai", "Jiya", "Jayesh", "Jasmine", "Jagdish"],
+            K: ["Kavya", "Karan", "Kirti", "Krunal", "Khushi", "Kabir"],
+            L: ["Laksh", "Lata", "Lokesh", "Lavanya", "Lalit"],
+            M: ["Manish", "Meera", "Mayank", "Monalisa", "Mohit", "Mansi"],
+            N: ["Nikhil", "Neha", "Nitin", "Navya", "Naman"],
+            O: ["Om", "Ojas", "Omkar", "Oviya"],
+            P: ["Pooja", "Pranav", "Priya", "Parth", "Payal", "Pankaj"],
+            Q: ["Qasim", "Qureshi"],
+            R: ["Rahul", "Riya", "Rohan", "Rashmi", "Rajesh", "Rishabh"],
+            S: ["Sahil", "Sanya", "Shivam", "Sneha", "Siddharth", "Shreya"],
+            T: ["Tanishq", "Tanya", "Tarun", "Trisha", "Tushar"],
+            U: ["Uday", "Urvi", "Utkarsh", "Upasana"],
+            V: ["Varun", "Vidya", "Vikram", "Vanshika", "Vivek"],
+            W: ["Wasim", "Waheeda"],
+            Y: ["Yash", "Yashvi", "Yogesh", "Yuvraj"],
+            Z: ["Zoya", "Zaid", "Zeenat", "Zain"]
+        };
+
+        const alphabetContainer = document.getElementById('alphabetButtons');
+        const namesList = document.getElementById('namesList');
+        const selectedLetterTitle = document.getElementById('selectedLetterTitle');
+
+        const alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
+        alphabets.forEach(function(letter) {
+            const button = document.createElement('button');
+            button.innerText = letter;
+            button.classList.add('letter-btn');
+            button.onclick = function() {
+                showNames(letter, button);
+            };
+            alphabetContainer.appendChild(button);
+        });
+
+        function showNames(letter, element) {
+            const allButtons = document.querySelectorAll('.letter-btn');
+            allButtons.forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            element.classList.add('active');
+
+            selectedLetterTitle.innerText = "Names starting with '" + letter + "'";
+            namesList.innerHTML = "";
+
+            const names = namesData[letter] || [];
+
+            if (names.length === 0) {
+                namesList.innerHTML = '<div class="empty-state">No common names found for ' + letter + '.</div>';
+                return;
+            }
+
+            names.forEach(function(name) {
+                const card = document.createElement('div');
+                card.classList.add('name-card');
+                card.innerText = name;
+                namesList.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
